@@ -20,13 +20,17 @@ xcodegen generate        # erzeugt KnoioApp.xcodeproj aus project.yml
 open KnoioApp.xcodeproj  # in Xcode öffnen, Simulator wählen, ⌘R
 ```
 
-Beim ersten Start ist `AppConfig.useMockData = true`: Der „Anmelden“-Button setzt
-ein Dummy-Token, und es wird das Mock-Manifest (`MockData.swift`) geladen – Tab-Bar
-mit Dashboard (native), CRM (web), Dateien (Nextcloud) und Chat (Matrix).
+Beim ersten Start sind `AppConfig.useMockAuth = true` und
+`AppConfig.useMockManifest = true`: Der „Anmelden“-Button setzt ein Dummy-Token,
+und es wird das Mock-Manifest (`MockData.swift`) geladen – Tab-Bar mit Dashboard
+(native), CRM (web), Dateien (Nextcloud) und Chat (Matrix).
+
+Gegen den **Mock-Server** ([`../api/`](../api/README.md)) testen: `useMockAuth = true`,
+`useMockManifest = false`, `apiBaseURL = http://localhost:4010`.
 
 ## An die echte Umgebung anbinden
 
-1. `AppConfig.useMockData = false` setzen.
+1. `AppConfig.useMockAuth = false` und `useMockManifest = false` setzen.
 2. In `AppConfig` die echten Werte eintragen (`TODO(verify)`):
    - `apiBaseURL`
    - `OIDC.authorizationEndpoint`, `OIDC.tokenEndpoint`, `clientID`, `redirectURI`, `scopes`

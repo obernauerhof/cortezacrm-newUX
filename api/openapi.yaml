@@ -1,0 +1,134 @@
+openapi: 3.1.0
+info:
+  title: Knoio Mobile BFF API
+  version: 0.1.0
+  description: >
+    Contract für die mobile App (iOS). Zentraler Endpunkt ist das
+    **Modul-Manifest** `GET /me/modules`, aus dem die App ihre Navigation
+    dynamisch und mandantenabhängig aufbaut (Server-Driven UI).
+
+    ⚠️ Entwurf — gegen die echte Knoio-/Corteza-Infrastruktur zu verifizieren
+    (TODO(verify)). Siehe docs/ios-app/architektur.md §4.
+servers:
+  - url: https://api.knoio.ai
+    description: Produktion
+  - url: http://localhost:4010
+    description: Lokaler Mock-Server (api/mock-server)
+security:
+  - bearerAuth: []
+paths:
+  /me/modules:
+    get:
+      operationId: getMyModules
+      summary: Provisionierte Module des angemeldeten Mandanten
+      description: >
+        Liefert die für den aktuellen Nutzer + Mandanten sichtbaren Module.
+        Steuert ausschließlich die **Sichtbarkeit** — die eigentliche
+        Autorisierung erfolgt serverseitig pro Request (RBAC).
+      tags: [me]
+      responses:
+        "200":
+          description: Modul-Manifest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModuleManifest"
+              examples:
+                demo:
+                  $ref: "#/components/examples/DemoManifest"
+        "401":
+          description: Nicht authentifiziert
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ModuleManifest:
+      type: object
+      required: [tenant, modules]
+      properties:
+        tenant:
+          $ref: "#/components/schemas/Tenant"
+        modules:
+          type: array
+          items:
+            $ref: "#/components/schemas/Module"
+    Tenant:
+      type: object
+      required: [id, name]
+      properties:
+        id: { type: string, example: "demo" }
+        name: { type: string, example: "Demo GmbH" }
+    Module:
+      type: object
+      required: [id, type, title, icon, order]
+      properties:
+        id:
+          type: string
+          description: Stabile, eindeutige Modul-ID.
+          example: "crm"
+        type:
+          $ref: "#/components/schemas/ModuleType"
+        title:
+          type: string
+          description: Anzeigename (Tab-Label).
+          example: "CRM"
+        icon:
+          type: string
+          description: SF-Symbol-Name für das Tab-Icon.
+          example: "person.2.fill"
+        order:
+          type: integer
+          description: Sortierreihenfolge in der Navigation (aufsteigend).
+          example: 20
+        url:
+          type: [string, "null"]
+          format: uri
+          description: Ziel-URL für `web`- und `external`-Module.
+          example: "https://demo.knoio.ai/crm"
+        provider:
+          oneOf:
+            - $ref: "#/components/schemas/ExternalProvider"
+            - type: "null"
+          description: Anbieter bei `external`-Modulen.
+        homeserver:
+          type: [string, "null"]
+          format: uri
+          description: Matrix-Homeserver (nur provider=matrix).
+        permissions:
+          type: [array, "null"]
+          items: { type: string }
+          description: Informative Berechtigungen (UI-Hints, keine Autorisierung).
+          example: ["crm.read"]
+    ModuleType:
+      type: string
+      description: >
+        Integrationsart — bestimmt das Rendering in der App.
+        native = SwiftUI gegen REST-API; web = WKWebView (React-Module);
+        external = Drittdienst (SDK/WebView/Deeplink).
+      enum: [native, web, external]
+    ExternalProvider:
+      type: string
+      enum: [nextcloud, seafile, matrix]
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+        message: { type: string }
+  examples:
+    DemoManifest:
+      summary: Beispiel mit allen drei Modul-Typen
+      value:
+        tenant: { id: "demo", name: "Demo GmbH" }
+        modules:
+          - { id: "dashboard", type: "native", title: "Dashboard", icon: "square.grid.2x2.fill", order: 10 }
+          - { id: "crm", type: "web", title: "CRM", icon: "person.2.fill", order: 20, url: "https://demo.knoio.ai/crm", permissions: ["crm.read"] }
+          - { id: "files", type: "external", title: "Dateien", icon: "folder.fill", order: 30, url: "https://cloud.demo.knoio.ai", provider: "nextcloud" }
+          - { id: "chat", type: "external", title: "Chat", icon: "message.fill", order: 40, provider: "matrix", homeserver: "https://matrix.demo.knoio.ai" }

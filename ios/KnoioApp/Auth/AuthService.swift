@@ -39,7 +39,7 @@ final class AuthService: NSObject, ObservableObject {
     // MARK: - Login
 
     func login() {
-        if AppConfig.useMockData {
+        if AppConfig.useMockAuth {
             try? tokenStore.save(.init(accessToken: "mock-token",
                                        refreshToken: nil,
                                        expiresAt: .distantFuture))

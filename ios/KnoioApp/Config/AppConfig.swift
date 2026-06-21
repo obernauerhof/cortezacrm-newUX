@@ -18,8 +18,14 @@ enum AppConfig {
         static let scopes = ["openid", "profile", "email", "offline_access"]
     }
 
-    /// Wenn `true`, läuft die App ohne Backend gegen ein lokales Mock-Manifest
-    /// und einen Dummy-Login. Für die Anbindung an die echte Umgebung auf
-    /// `false` setzen.
-    static let useMockData = true
+    /// Dummy-Login statt echtem OIDC-Flow (Entwicklung ohne IdP).
+    static let useMockAuth = true
+
+    /// Lokales Mock-Manifest (`MockData`) statt Fetch von `apiBaseURL`
+    /// (Entwicklung ohne Backend).
+    ///
+    /// Tipp: Gegen den Mock-Server testen → `useMockAuth = true`,
+    /// `useMockManifest = false`, `apiBaseURL = http://localhost:4010`
+    /// (siehe `api/README.md`).
+    static let useMockManifest = true
 }

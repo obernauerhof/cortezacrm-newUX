@@ -28,7 +28,7 @@ final class ModuleService: ObservableObject {
         error = nil
         defer { isLoading = false }
         do {
-            if AppConfig.useMockData {
+            if AppConfig.useMockManifest {
                 manifest = MockData.manifest
             } else {
                 manifest = try await api.get("/me/modules")
