@@ -9,6 +9,16 @@ enum AppConfig {
     /// Basis-URL der Knoio-REST-API (Quelle des Modul-Manifests `GET /me/modules`).
     static let apiBaseURL = URL(string: "https://api.knoio.ai")!
 
+    /// Konfiguration für den nativen Matrix-Chat.
+    enum Matrix {
+        /// Native Chat-Daten aus dem In-Memory-Mock statt echtem Homeserver.
+        static let useMock = true
+
+        /// Access-Token für die Matrix Client-Server-API. Bei OIDC/MSC3861
+        /// das SSO-Token. `TODO(verify)` – echten Bezug ergänzen.
+        static let accessToken = ""
+    }
+
     /// OIDC-Konfiguration des gemeinsamen Identity-Providers (SSO).
     enum OIDC {
         static let authorizationEndpoint = URL(string: "https://id.knoio.ai/oauth2/authorize")!

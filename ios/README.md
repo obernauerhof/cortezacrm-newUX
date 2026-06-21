@@ -50,7 +50,7 @@ KnoioApp/
 ├─ Modules/       Module-Modell, ModuleService (/me/modules), MockData
 │  ├─ Native/     Native SwiftUI-Module (Dashboard als Beispiel)
 │  ├─ Web/        WKWebView-Einbettung (Token-Bridge)
-│  └─ External/   Drittdienste: Nextcloud, Seafile, Matrix
+│  └─ External/   Nextcloud, Seafile (SSO-Launch); Matrix/ = nativer Chat
 ├─ Navigation/    Dynamische TabBar + ModuleHostView (Routing nach Typ)
 ├─ Config/        AppConfig (Endpunkte, Feature-Flags)
 └─ Resources/     Info.plist (URL-Schema)
@@ -62,11 +62,15 @@ KnoioApp/
 |-----|-----------|-------|
 | `native` | SwiftUI gegen REST-API | `Modules/Native/` |
 | `web` | WKWebView (eure React-Module) | `Modules/Web/WebModuleView.swift` |
-| `external` | SSO-Launch / SDK (Nextcloud, Seafile, Matrix) | `Modules/External/ExternalModuleView.swift` |
+| `external` | Nextcloud/Seafile per SSO-Launch; **Matrix nativ** (Client-Server-API) | `Modules/External/` |
+
+Matrix-Chat läuft mit `AppConfig.Matrix.useMock = true` gegen In-Memory-Demodaten;
+für einen echten Homeserver `useMock = false` und `accessToken` setzen.
 
 ## Nächste Schritte (Roadmap-Phasen)
 
 - **Phase 1:** Echte `/me/modules`-Anbindung, `web`-Module per SSO-WebView.
-- **Phase 2:** Drittdienste anbinden (Matrix-Chat, Nextcloud/Seafile-Dateien).
+- **Phase 2:** Drittdienste anbinden – Matrix-Chat nativ (✅ Grundgerüst),
+  Nextcloud/Seafile-Dateien.
 - **Phase 3:** Native Kernmodule ausbauen (Dashboard mit echten Daten), Push (APNs).
 - **Phase 4:** Offline-Lesemodus, Feinschliff, Store-Reife.
