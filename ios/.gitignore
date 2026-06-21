@@ -1,0 +1,9 @@
+# Xcode / XcodeGen generierte Artefakte
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+.build/
+build/
+*.xcuserstate
+.swiftpm/
