@@ -19,6 +19,16 @@ enum AppConfig {
         static let accessToken = ""
     }
 
+    /// Konfiguration für den nativen Seafile-Dateibrowser.
+    enum Seafile {
+        /// Native Datei-Daten aus dem In-Memory-Mock statt echtem Server.
+        static let useMock = true
+
+        /// API-Token für die Seafile-Web-API (Token-Auth). Bei SSO entsprechend
+        /// beziehen. `TODO(verify)`.
+        static let token = ""
+    }
+
     /// OIDC-Konfiguration des gemeinsamen Identity-Providers (SSO).
     enum OIDC {
         static let authorizationEndpoint = URL(string: "https://id.knoio.ai/oauth2/authorize")!

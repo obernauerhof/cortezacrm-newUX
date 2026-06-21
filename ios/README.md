@@ -50,7 +50,8 @@ KnoioApp/
 ├─ Modules/       Module-Modell, ModuleService (/me/modules), MockData
 │  ├─ Native/     Native SwiftUI-Module (Dashboard als Beispiel)
 │  ├─ Web/        WKWebView-Einbettung (Token-Bridge)
-│  └─ External/   Nextcloud, Seafile (SSO-Launch); Matrix/ = nativer Chat
+│  └─ External/   Nextcloud (SSO-Launch); Matrix/ = nativer Chat;
+│                 Seafile/ = nativer Dateibrowser
 ├─ Navigation/    Dynamische TabBar + ModuleHostView (Routing nach Typ)
 ├─ Config/        AppConfig (Endpunkte, Feature-Flags)
 └─ Resources/     Info.plist (URL-Schema)
@@ -62,10 +63,11 @@ KnoioApp/
 |-----|-----------|-------|
 | `native` | SwiftUI gegen REST-API | `Modules/Native/` |
 | `web` | WKWebView (eure React-Module) | `Modules/Web/WebModuleView.swift` |
-| `external` | Nextcloud/Seafile per SSO-Launch; **Matrix nativ** (Client-Server-API) | `Modules/External/` |
+| `external` | Nextcloud per SSO-Launch; **Matrix** (Chat) und **Seafile** (Dateien) nativ | `Modules/External/` |
 
-Matrix-Chat läuft mit `AppConfig.Matrix.useMock = true` gegen In-Memory-Demodaten;
-für einen echten Homeserver `useMock = false` und `accessToken` setzen.
+Matrix-Chat (`AppConfig.Matrix`) und Seafile-Dateibrowser (`AppConfig.Seafile`)
+laufen mit `useMock = true` gegen In-Memory-Demodaten; für echte Server jeweils
+`useMock = false` und `accessToken`/`token` setzen.
 
 ## Nächste Schritte (Roadmap-Phasen)
 

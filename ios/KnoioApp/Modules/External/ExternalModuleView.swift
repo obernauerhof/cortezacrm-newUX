@@ -18,6 +18,13 @@ struct ExternalModuleView: View {
                 ContentUnavailableView("Kein Homeserver konfiguriert",
                                        systemImage: "message.badge.waveform")
             }
+        case .seafile:
+            if let server = module.url ?? module.homeserver {
+                SeafileBrowserView(server: server)
+            } else {
+                ContentUnavailableView("Kein Server konfiguriert",
+                                       systemImage: "externaldrive.badge.xmark")
+            }
         default:
             ExternalLaunchView(module: module)
         }
@@ -59,9 +66,7 @@ private struct ExternalLaunchView: View {
         switch module.provider {
         case .nextcloud:
             return "Dateien & Zusammenarbeit (Nextcloud).\nNativer Client-Ausbau via WebDAV/OCS folgt."
-        case .seafile:
-            return "Dateisynchronisation (Seafile).\nNativer Client-Ausbau via Seafile-API folgt."
-        case .matrix, .none:
+        case .seafile, .matrix, .none:
             return "Externer Dienst."
         }
     }
