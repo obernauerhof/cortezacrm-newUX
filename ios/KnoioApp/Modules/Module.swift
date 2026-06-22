@@ -17,6 +17,10 @@ struct Module: Identifiable, Decodable, Hashable {
     let homeserver: URL?
     /// Informative Berechtigungen (UI-Hints — keine Autorisierung!).
     let permissions: [String]?
+    /// Chat-Engine bei `provider == .matrix` — vom Admin pro Mandant wählbar.
+    /// `native` = eigener Client, `rust-sdk` = matrix-rust-sdk (Element X).
+    /// Fehlt das Feld, gilt `native`.
+    let engine: ChatEngine?
 }
 
 /// Integrationsart eines Moduls. Bestimmt, wie es in der App gerendert wird.

@@ -13,7 +13,7 @@ struct ExternalModuleView: View {
         switch module.provider {
         case .matrix:
             if let homeserver = module.homeserver ?? module.url {
-                MatrixChatView(homeserver: homeserver)
+                MatrixChatView(homeserver: homeserver, engine: module.engine ?? .native)
             } else {
                 ContentUnavailableView("Kein Homeserver konfiguriert",
                                        systemImage: "message.badge.waveform")

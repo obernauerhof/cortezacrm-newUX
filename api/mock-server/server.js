@@ -22,8 +22,8 @@ const manifest = {
   modules: [
     { id: 'dashboard', type: 'native', title: 'Dashboard', icon: 'square.grid.2x2.fill', order: 10 },
     { id: 'crm', type: 'web', title: 'CRM', icon: 'person.2.fill', order: 20, url: 'https://demo.knoio.ai/crm', permissions: ['crm.read'] },
-    { id: 'files', type: 'external', title: 'Dateien', icon: 'folder.fill', order: 30, url: 'https://cloud.demo.knoio.ai', provider: 'nextcloud' },
-    { id: 'chat', type: 'external', title: 'Chat', icon: 'message.fill', order: 40, provider: 'matrix', homeserver: 'https://matrix.demo.knoio.ai' },
+    { id: 'files', type: 'external', title: 'Dateien', icon: 'folder.fill', order: 30, url: 'https://seafile.demo.knoio.ai', provider: 'seafile' },
+    { id: 'chat', type: 'external', title: 'Chat', icon: 'message.fill', order: 40, provider: 'matrix', homeserver: 'https://matrix.demo.knoio.ai', engine: 'native' },
   ],
 };
 

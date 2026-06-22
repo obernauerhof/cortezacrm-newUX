@@ -22,13 +22,39 @@ protocol ChatBackend: Sendable {
     func send(_ text: String, to roomId: String) async throws -> MatrixMessage
 }
 
-/// Wählt das Backend abhängig von `AppConfig.Matrix.useMock`.
+/// Vom Admin pro Mandant wählbare Chat-Engine (aus dem Modul-Manifest).
+enum ChatEngine: String, Decodable, Sendable {
+    /// Eigener nativer Client gegen die Matrix-C-S-API.
+    case native
+    /// matrix-rust-sdk — dieselbe Engine wie Element X.
+    case rustSdk = "rust-sdk"
+}
+
+/// Fehler des Chat-Layers.
+enum ChatError: LocalizedError {
+    case engineNotWired(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .engineNotWired(let message): return message
+        }
+    }
+}
+
+/// Wählt das Backend abhängig von Mock-Schalter und (admin-/mandantengewählter)
+/// Engine.
 enum ChatBackendFactory {
-    static func make(homeserver: URL) -> ChatBackend {
+    static func make(homeserver: URL, engine: ChatEngine) -> ChatBackend {
         if AppConfig.Matrix.useMock {
             return MockChatBackend.shared
         }
-        return LiveMatrixClient(homeserver: homeserver,
-                                accessToken: AppConfig.Matrix.accessToken)
+        switch engine {
+        case .native:
+            return LiveMatrixClient(homeserver: homeserver,
+                                    accessToken: AppConfig.Matrix.accessToken)
+        case .rustSdk:
+            return RustSDKMatrixClient(homeserver: homeserver,
+                                       accessToken: AppConfig.Matrix.accessToken)
+        }
     }
 }

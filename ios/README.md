@@ -69,6 +69,12 @@ Matrix-Chat (`AppConfig.Matrix`) und Seafile-Dateibrowser (`AppConfig.Seafile`)
 laufen mit `useMock = true` gegen In-Memory-Demodaten; für echte Server jeweils
 `useMock = false` und `accessToken`/`token` setzen.
 
+**Matrix-Engine pro Mandant:** Das Manifest-Feld `engine` der Chat-Module steuert,
+welche Engine genutzt wird – `native` (eigener Client) oder `rust-sdk`
+(matrix-rust-sdk / Element X). So kann ein Admin künftig pro Mandant umschalten.
+Der `rust-sdk`-Pfad ist als Platzhalter angelegt (Einbindung siehe
+`RustSDKMatrixClient.swift`).
+
 ## Nächste Schritte (Roadmap-Phasen)
 
 - **Phase 1:** Echte `/me/modules`-Anbindung, `web`-Module per SSO-WebView.

@@ -6,11 +6,13 @@ import SwiftUI
 /// `NavigationStack` von `ModuleHostView` dargestellt.
 struct MatrixChatView: View {
     let homeserver: URL
+    let engine: ChatEngine
     @StateObject private var model: RoomListModel
 
-    init(homeserver: URL) {
+    init(homeserver: URL, engine: ChatEngine) {
         self.homeserver = homeserver
-        _model = StateObject(wrappedValue: RoomListModel(homeserver: homeserver))
+        self.engine = engine
+        _model = StateObject(wrappedValue: RoomListModel(homeserver: homeserver, engine: engine))
     }
 
     var body: some View {
@@ -37,7 +39,7 @@ struct MatrixChatView: View {
             }
         }
         .navigationDestination(for: MatrixRoom.self) { room in
-            RoomView(homeserver: homeserver, room: room)
+            RoomView(homeserver: homeserver, engine: engine, room: room)
         }
         .task { await model.load() }
     }
@@ -51,8 +53,8 @@ final class RoomListModel: ObservableObject {
 
     private let backend: ChatBackend
 
-    init(homeserver: URL) {
-        backend = ChatBackendFactory.make(homeserver: homeserver)
+    init(homeserver: URL, engine: ChatEngine) {
+        backend = ChatBackendFactory.make(homeserver: homeserver, engine: engine)
     }
 
     func load() async {
@@ -72,8 +74,8 @@ final class RoomListModel: ObservableObject {
 struct RoomView: View {
     @StateObject private var model: RoomModel
 
-    init(homeserver: URL, room: MatrixRoom) {
-        _model = StateObject(wrappedValue: RoomModel(homeserver: homeserver, room: room))
+    init(homeserver: URL, engine: ChatEngine, room: MatrixRoom) {
+        _model = StateObject(wrappedValue: RoomModel(homeserver: homeserver, engine: engine, room: room))
     }
 
     var body: some View {
@@ -117,9 +119,9 @@ final class RoomModel: ObservableObject {
     let room: MatrixRoom
     private let backend: ChatBackend
 
-    init(homeserver: URL, room: MatrixRoom) {
+    init(homeserver: URL, engine: ChatEngine, room: MatrixRoom) {
         self.room = room
-        backend = ChatBackendFactory.make(homeserver: homeserver)
+        backend = ChatBackendFactory.make(homeserver: homeserver, engine: engine)
     }
 
     func load() async {
