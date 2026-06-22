@@ -219,15 +219,23 @@ keine schwergewichtigen Cross-Plattform-Frameworks im Kern (die WebViews
 
 ---
 
-## 11. Offene Punkte / Entscheidungen
+## 11. Getroffene Entscheidungen & offene Punkte
 
-1. **Nextcloud *oder* Seafile für Dateien?** Beide parallel anzubieten ist für die
-   Nutzer verwirrend und doppelter Pflegeaufwand. Empfehlung: **einen** Datei-Dienst
-   als Standard, den anderen nur falls mandantenspezifisch provisioniert.
-2. **WebView-first vs. nativ-first** als Grundausrichtung (Empfehlung: WebView-first
-   in Phase 1).
-3. **`TODO(verify)`**: Echten IdP/OIDC-Setup, Applications-/Entitlement-Endpunkt und
-   Domainstruktur (`*.knoio.ai`) am Quellcode bestätigen.
+**Entschieden:**
+1. **Schale = Knoio-App (Modell B)** — nicht die Nextcloud-UI. Chat/Kanäle via
+   Matrix/Element, Dateien als provider-neutrales Modul.
+2. **nativ-first** als Grundausrichtung (WebView nur für reine `web`-Module).
+3. **Dateien:** *kein* einzelnes Produkt als Hub, sondern eine **Mount-Gateway-
+   Schicht** (rclone), weil **fremde Clouds einhängen Pflicht ist** (Google,
+   Microsoft/OneDrive/SharePoint, Nextcloud, Seafile, S3/SMB/WebDAV).
+   → Details: [`dateien-collaboration.md`](dateien-collaboration.md).
+4. **Matrix-Engine** pro Mandant admin-wählbar (`native` | `rust-sdk`).
+
+**Offen / `TODO(verify)`:**
+- Echten IdP/OIDC-Setup, Applications-/Entitlement-Endpunkt und Domainstruktur
+  (`*.knoio.ai`) am Quellcode bestätigen.
+- Gateway-Betrieb, OAuth-Connect-Flows (Google/Microsoft), Mandantentrennung —
+  siehe [`dateien-collaboration.md`](dateien-collaboration.md) §8.
 
 ---
 
