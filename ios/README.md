@@ -50,8 +50,8 @@ KnoioApp/
 ├─ Modules/       Module-Modell, ModuleService (/me/modules), MockData
 │  ├─ Native/     Native SwiftUI-Module (Dashboard als Beispiel)
 │  ├─ Web/        WKWebView-Einbettung (Token-Bridge)
-│  └─ External/   Nextcloud (SSO-Launch); Matrix/ = nativer Chat;
-│                 Seafile/ = nativer Dateibrowser
+│  └─ External/   Matrix/ = nativer Chat; Files/ = provider-neutraler
+│                 Dateibrowser (Mounts: Google, Microsoft, Nextcloud, Seafile …)
 ├─ Navigation/    Dynamische TabBar + ModuleHostView (Routing nach Typ)
 ├─ Config/        AppConfig (Endpunkte, Feature-Flags)
 └─ Resources/     Info.plist (URL-Schema)
@@ -63,11 +63,14 @@ KnoioApp/
 |-----|-----------|-------|
 | `native` | SwiftUI gegen REST-API | `Modules/Native/` |
 | `web` | WKWebView (eure React-Module) | `Modules/Web/WebModuleView.swift` |
-| `external` | Nextcloud per SSO-Launch; **Matrix** (Chat) und **Seafile** (Dateien) nativ | `Modules/External/` |
+| `external` | **Matrix** (Chat) nativ; **Files** = provider-neutraler Dateibrowser über das Gateway | `Modules/External/` |
 
-Matrix-Chat (`AppConfig.Matrix`) und Seafile-Dateibrowser (`AppConfig.Seafile`)
-laufen mit `useMock = true` gegen In-Memory-Demodaten; für echte Server jeweils
-`useMock = false` und `accessToken`/`token` setzen.
+Matrix-Chat (`AppConfig.Matrix`) und Dateimodul (`AppConfig.Files`) laufen mit
+`useMock = true` gegen In-Memory-Demodaten; für echte Server jeweils
+`useMock = false` und `accessToken`/`token` setzen. Das Dateimodul ist
+**provider-neutral**: einzelne Clouds (Google, Microsoft/OneDrive/SharePoint,
+Nextcloud, Seafile …) werden serverseitig im Gateway als **Mounts** eingehängt –
+Konzept siehe [`../docs/ios-app/dateien-collaboration.md`](../docs/ios-app/dateien-collaboration.md).
 
 **Matrix-Engine pro Mandant:** Das Manifest-Feld `engine` der Chat-Module steuert,
 welche Engine genutzt wird – `native` (eigener Client) oder `rust-sdk`

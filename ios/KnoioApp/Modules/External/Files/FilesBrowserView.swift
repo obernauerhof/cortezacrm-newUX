@@ -1,27 +1,27 @@
 import SwiftUI
 
-// MARK: - Bibliotheksliste
+// MARK: - Mount-Liste (oberste Ebene)
 
-/// Nativer Seafile-Dateibrowser: Bibliotheken → Ordner → Datei. Wird innerhalb
-/// des `NavigationStack` von `ModuleHostView` dargestellt.
-struct SeafileBrowserView: View {
-    let server: URL
-    @StateObject private var model: SeafileLibrariesModel
+/// Provider-neutraler Dateibrowser: eingehängte Clouds (Mounts) → Ordner →
+/// Datei. Wird innerhalb des `NavigationStack` von `ModuleHostView` dargestellt.
+struct FilesBrowserView: View {
+    let gateway: URL
+    @StateObject private var model: MountsModel
 
-    init(server: URL) {
-        self.server = server
-        _model = StateObject(wrappedValue: SeafileLibrariesModel(server: server))
+    init(gateway: URL) {
+        self.gateway = gateway
+        _model = StateObject(wrappedValue: MountsModel(gateway: gateway))
     }
 
     var body: some View {
-        List(model.libraries) { library in
-            NavigationLink(value: SeafileLocation(repoId: library.id, title: library.name, path: "/")) {
-                Label(library.name, systemImage: "externaldrive.fill")
+        List(model.mounts) { mount in
+            NavigationLink(value: FilesLocation(mountId: mount.id, title: mount.name, path: "/")) {
+                Label(mount.name, systemImage: mount.provider.systemImage)
             }
         }
         .listStyle(.plain)
         .overlay {
-            if model.libraries.isEmpty {
+            if model.mounts.isEmpty {
                 if model.isLoading {
                     ProgressView()
                 } else if let error = model.error {
@@ -29,28 +29,29 @@ struct SeafileBrowserView: View {
                                            systemImage: "externaldrive.badge.xmark",
                                            description: Text(error))
                 } else {
-                    ContentUnavailableView("Keine Bibliotheken", systemImage: "externaldrive")
+                    ContentUnavailableView("Keine Laufwerke eingehängt",
+                                           systemImage: "externaldrive")
                 }
             }
         }
-        // Ein Ziel für die gesamte Tiefe des Stacks (Bibliothek und Unterordner).
-        .navigationDestination(for: SeafileLocation.self) { location in
-            SeafileDirectoryView(server: server, location: location)
+        // Ein Ziel für die gesamte Tiefe des Stacks (Mount-Wurzel und Unterordner).
+        .navigationDestination(for: FilesLocation.self) { location in
+            FilesDirectoryView(gateway: gateway, location: location)
         }
         .task { await model.load() }
     }
 }
 
 @MainActor
-final class SeafileLibrariesModel: ObservableObject {
-    @Published private(set) var libraries: [SeafileLibrary] = []
+final class MountsModel: ObservableObject {
+    @Published private(set) var mounts: [Mount] = []
     @Published private(set) var isLoading = false
     @Published private(set) var error: String?
 
     private let backend: FilesBackend
 
-    init(server: URL) {
-        backend = FilesBackendFactory.make(server: server)
+    init(gateway: URL) {
+        backend = FilesBackendFactory.make(gateway: gateway)
     }
 
     func load() async {
@@ -58,7 +59,7 @@ final class SeafileLibrariesModel: ObservableObject {
         error = nil
         defer { isLoading = false }
         do {
-            libraries = try await backend.libraries()
+            mounts = try await backend.mounts()
         } catch {
             self.error = error.localizedDescription
         }
@@ -67,22 +68,22 @@ final class SeafileLibrariesModel: ObservableObject {
 
 // MARK: - Ordneransicht
 
-struct SeafileDirectoryView: View {
-    let server: URL
-    @StateObject private var model: SeafileDirectoryModel
+struct FilesDirectoryView: View {
+    let gateway: URL
+    @StateObject private var model: FilesDirectoryModel
     @Environment(\.openURL) private var openURL
 
-    init(server: URL, location: SeafileLocation) {
-        self.server = server
-        _model = StateObject(wrappedValue: SeafileDirectoryModel(server: server, location: location))
+    init(gateway: URL, location: FilesLocation) {
+        self.gateway = gateway
+        _model = StateObject(wrappedValue: FilesDirectoryModel(gateway: gateway, location: location))
     }
 
     var body: some View {
         List(model.entries) { entry in
             if entry.isDirectory {
-                NavigationLink(value: SeafileLocation(repoId: entry.repoId,
-                                                      title: entry.name,
-                                                      path: entry.path)) {
+                NavigationLink(value: FilesLocation(mountId: entry.mountId,
+                                                    title: entry.name,
+                                                    path: entry.path)) {
                     Label(entry.name, systemImage: "folder.fill")
                 }
             } else {
@@ -122,17 +123,17 @@ struct SeafileDirectoryView: View {
 }
 
 @MainActor
-final class SeafileDirectoryModel: ObservableObject {
-    @Published private(set) var entries: [SeafileEntry] = []
+final class FilesDirectoryModel: ObservableObject {
+    @Published private(set) var entries: [FileEntry] = []
     @Published private(set) var isLoading = false
     @Published private(set) var error: String?
 
-    let location: SeafileLocation
+    let location: FilesLocation
     private let backend: FilesBackend
 
-    init(server: URL, location: SeafileLocation) {
+    init(gateway: URL, location: FilesLocation) {
         self.location = location
-        backend = FilesBackendFactory.make(server: server)
+        backend = FilesBackendFactory.make(gateway: gateway)
     }
 
     func load() async {
@@ -140,15 +141,15 @@ final class SeafileDirectoryModel: ObservableObject {
         error = nil
         defer { isLoading = false }
         do {
-            entries = try await backend.entries(in: location.repoId, path: location.path)
+            entries = try await backend.entries(in: location.mountId, path: location.path)
         } catch {
             self.error = error.localizedDescription
         }
     }
 
-    func downloadLink(for entry: SeafileEntry) async -> URL? {
+    func downloadLink(for entry: FileEntry) async -> URL? {
         do {
-            return try await backend.downloadLink(repoId: entry.repoId, path: entry.path)
+            return try await backend.downloadLink(mountId: entry.mountId, path: entry.path)
         } catch {
             self.error = error.localizedDescription
             return nil

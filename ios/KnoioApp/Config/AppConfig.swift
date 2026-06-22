@@ -19,13 +19,13 @@ enum AppConfig {
         static let accessToken = ""
     }
 
-    /// Konfiguration für den nativen Seafile-Dateibrowser.
-    enum Seafile {
-        /// Native Datei-Daten aus dem In-Memory-Mock statt echtem Server.
+    /// Konfiguration für das provider-neutrale Dateimodul (Gateway).
+    enum Files {
+        /// Native Datei-Daten aus dem In-Memory-Mock statt echtem Gateway.
         static let useMock = true
 
-        /// API-Token für die Seafile-Web-API (Token-Auth). Bei SSO entsprechend
-        /// beziehen. `TODO(verify)`.
+        /// Bearer-Token für das Knoio-Datei-Gateway (BFF). Bei SSO das
+        /// OIDC-Token. `TODO(verify)`.
         static let token = ""
     }
 

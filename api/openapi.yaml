@@ -42,6 +42,62 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /me/mounts:
+    get:
+      operationId: getMyMounts
+      summary: Eingehängte Cloud-Laufwerke (Mounts) des Mandanten
+      description: >
+        Liefert die für den Nutzer sichtbaren Mounts des Datei-Gateways
+        (z. B. Google Drive, OneDrive/SharePoint, Nextcloud, Seafile).
+        Pro-Anbieter-OAuth liegt serverseitig im Gateway — nie auf dem Gerät.
+        Siehe docs/ios-app/dateien-collaboration.md.
+      tags: [files]
+      responses:
+        "200":
+          description: Liste der Mounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Mount" }
+  /me/mounts/{mountId}/entries:
+    get:
+      operationId: getMountEntries
+      summary: Verzeichnisinhalt eines Mounts
+      tags: [files]
+      parameters:
+        - { name: mountId, in: path, required: true, schema: { type: string } }
+        - name: path
+          in: query
+          required: true
+          schema: { type: string }
+          description: Verzeichnispfad, z. B. "/" oder "/Angebote".
+      responses:
+        "200":
+          description: Einträge (Dateien/Ordner)
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/FileEntry" }
+  /me/mounts/{mountId}/download:
+    get:
+      operationId: getMountDownload
+      summary: Temporäre Download-URL für eine Datei
+      tags: [files]
+      parameters:
+        - { name: mountId, in: path, required: true, schema: { type: string } }
+        - { name: path, in: query, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: Download-Verweis
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [url]
+                properties:
+                  url: { type: string, format: uri }
 components:
   securitySchemes:
     bearerAuth:
@@ -122,13 +178,40 @@ components:
       enum: [native, web, external]
     ExternalProvider:
       type: string
-      enum: [nextcloud, seafile, matrix]
+      description: >
+        Art eines external-Moduls. matrix = Chat/Kanäle;
+        files = provider-neutrales Dateimodul über das Gateway (Mounts via
+        GET /me/mounts).
+      enum: [matrix, files]
     ChatEngine:
       type: string
       description: >
         Matrix-Engine. native = eigener Client (Client-Server-API);
         rust-sdk = matrix-rust-sdk (dieselbe Engine wie Element X).
       enum: [native, rust-sdk]
+    Mount:
+      type: object
+      required: [id, name, provider]
+      properties:
+        id: { type: string, example: "m-onedrive" }
+        name: { type: string, example: "OneDrive Business" }
+        provider: { $ref: "#/components/schemas/MountProvider" }
+    MountProvider:
+      type: string
+      enum: [google, microsoft, nextcloud, seafile, s3, smb, webdav, other]
+    FileEntry:
+      type: object
+      required: [name, type]
+      properties:
+        name: { type: string, example: "Angebot-2026.docx" }
+        type:
+          type: string
+          enum: [file, dir]
+        size: { type: [integer, "null"], format: int64 }
+        mtime:
+          type: [integer, "null"]
+          format: int64
+          description: Letzte Änderung als Unix-Zeit (Sekunden).
     Error:
       type: object
       required: [error]
@@ -143,5 +226,5 @@ components:
         modules:
           - { id: "dashboard", type: "native", title: "Dashboard", icon: "square.grid.2x2.fill", order: 10 }
           - { id: "crm", type: "web", title: "CRM", icon: "person.2.fill", order: 20, url: "https://demo.knoio.ai/crm", permissions: ["crm.read"] }
-          - { id: "files", type: "external", title: "Dateien", icon: "folder.fill", order: 30, url: "https://cloud.demo.knoio.ai", provider: "nextcloud" }
+          - { id: "files", type: "external", title: "Dateien", icon: "folder.fill", order: 30, url: "https://api.knoio.ai", provider: "files" }
           - { id: "chat", type: "external", title: "Chat", icon: "message.fill", order: 40, provider: "matrix", homeserver: "https://matrix.demo.knoio.ai", engine: "native" }

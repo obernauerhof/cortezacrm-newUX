@@ -1,11 +1,12 @@
 import SwiftUI
 
-/// Einstieg für `external`-Module (Nextcloud, Seafile, Synapse/Matrix).
+/// Einstieg für `external`-Module.
 ///
-/// Matrix wird **nativ** (Matrix Client-Server-API) dargestellt; Nextcloud und
-/// Seafile starten per SSO-Launch in den jeweiligen Dienst. Der native Ausbau
-/// von Dateien (WebDAV/OCS bzw. Seafile-API) dockt hier an — siehe
-/// Architektur §6.
+/// - `matrix` → nativer Chat (mandanten-/admin-wählbare Engine).
+/// - `files`  → provider-neutraler Dateibrowser über das Gateway (mit den
+///   eingehängten Clouds: Google, Microsoft, Nextcloud, Seafile …).
+///
+/// Siehe `docs/ios-app/dateien-collaboration.md`.
 struct ExternalModuleView: View {
     let module: Module
 
@@ -18,20 +19,15 @@ struct ExternalModuleView: View {
                 ContentUnavailableView("Kein Homeserver konfiguriert",
                                        systemImage: "message.badge.waveform")
             }
-        case .seafile:
-            if let server = module.url ?? module.homeserver {
-                SeafileBrowserView(server: server)
-            } else {
-                ContentUnavailableView("Kein Server konfiguriert",
-                                       systemImage: "externaldrive.badge.xmark")
-            }
-        default:
+        case .files:
+            FilesBrowserView(gateway: module.url ?? AppConfig.apiBaseURL)
+        case .none:
             ExternalLaunchView(module: module)
         }
     }
 }
 
-/// SSO-Launch-Oberfläche für Drittdienste ohne native Integration.
+/// Generischer SSO-Launch für externe Dienste ohne native Integration.
 private struct ExternalLaunchView: View {
     let module: Module
     @Environment(\.openURL) private var openURL
@@ -43,7 +39,7 @@ private struct ExternalLaunchView: View {
                 .foregroundStyle(.tint)
             Text(module.title)
                 .font(.title2.bold())
-            Text(providerDescription)
+            Text("Externer Dienst.")
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
@@ -60,14 +56,5 @@ private struct ExternalLaunchView: View {
             Spacer()
         }
         .padding(32)
-    }
-
-    private var providerDescription: String {
-        switch module.provider {
-        case .nextcloud:
-            return "Dateien & Zusammenarbeit (Nextcloud).\nNativer Client-Ausbau via WebDAV/OCS folgt."
-        case .seafile, .matrix, .none:
-            return "Externer Dienst."
-        }
     }
 }

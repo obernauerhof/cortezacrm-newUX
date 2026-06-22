@@ -33,11 +33,12 @@ enum ModuleType: String, Decodable {
     case external
 }
 
-/// Drittanbieter für `external`-Module.
+/// Drittanbieter/Art eines `external`-Moduls.
 enum ExternalProvider: String, Decodable {
-    case nextcloud
-    case seafile
+    /// Chat/Kanäle via Matrix.
     case matrix
+    /// Provider-neutrales Dateimodul über das Gateway (mit eingehängten Clouds).
+    case files
 }
 
 /// Antwort von `GET /me/modules`.
