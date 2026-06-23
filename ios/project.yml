@@ -1,0 +1,25 @@
+name: KnoioApp
+options:
+  bundleIdPrefix: ai.knoio
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  KnoioApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: KnoioApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ai.knoio.app
+        INFOPLIST_FILE: KnoioApp/Resources/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ENABLE_PREVIEWS: YES
+        CODE_SIGN_STYLE: Automatic

@@ -1,0 +1,13 @@
+{
+  "name": "knoio-mock-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Abhängigkeitsfreier Mock-Server für GET /me/modules (Knoio Mobile BFF).",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}
