@@ -1,0 +1,83 @@
+name: iOS Screenshots
+
+# Startet die App auf einem Cloud-Mac im iOS-Simulator und lädt Screenshots
+# der Tabs als Artefakt hoch — so lässt sich die laufende Oberfläche ansehen,
+# ohne lokal einen Mac/Xcode zu bedienen.
+
+on:
+  push:
+    branches: [main, "claude/**"]
+    paths:
+      - "ios/**"
+      - ".github/workflows/ios-screenshots.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ios-shots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    name: Screenshots (iOS Simulator)
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Xcode auswählen
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: XcodeGen installieren
+        run: brew install xcodegen
+
+      - name: Xcode-Projekt generieren
+        working-directory: ios
+        run: xcodegen generate
+
+      - name: Simulator auswählen
+        id: sim
+        run: |
+          UDID=$(xcrun simctl list devices available | awk -F '[()]' '/iPhone/ {print $2; exit}')
+          echo "Verwende Simulator $UDID"
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+
+      - name: Für Simulator bauen
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project KnoioApp.xcodeproj \
+            -scheme KnoioApp \
+            -configuration Debug \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Booten, installieren, Screenshots aufnehmen
+        working-directory: ios
+        run: |
+          set -e
+          UDID="${{ steps.sim.outputs.udid }}"
+          APP="build/Build/Products/Debug-iphonesimulator/KnoioApp.app"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b || true
+          xcrun simctl install "$UDID" "$APP"
+          mkdir -p screenshots
+          for TAB in dashboard files chat; do
+            xcrun simctl terminate "$UDID" ai.knoio.app 2>/dev/null || true
+            xcrun simctl launch "$UDID" ai.knoio.app -UITEST_AUTOLOGIN YES -startTab "$TAB"
+            sleep 5
+            xcrun simctl io "$UDID" screenshot "screenshots/$TAB.png"
+          done
+
+      - name: Screenshots hochladen
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-screenshots
+          path: ios/screenshots
+          if-no-files-found: warn

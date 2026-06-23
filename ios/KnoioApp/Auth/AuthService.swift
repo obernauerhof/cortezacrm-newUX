@@ -25,6 +25,10 @@ final class AuthService: NSObject, ObservableObject {
         if let tokens = tokenStore.load(), tokens.expiresAt > Date() {
             state = .authenticated
         }
+        // Automatischer Login für CI-Screenshots (nur via Launch-Argument aktiv).
+        if UserDefaults.standard.bool(forKey: "UITEST_AUTOLOGIN") {
+            state = .authenticated
+        }
     }
 
     /// Liefert ein gültiges Access-Token (erneuert es bei Bedarf via Refresh).
