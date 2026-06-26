@@ -1,0 +1,271 @@
+{
+  "$comment": "Registrierungs-/Onboarding-Fragebögen für das Theme 'content' (AA University). Speist die KI-gestützte Lernpfad-Empfehlung. Siehe aa-university-registrierung-fragebogen.md.",
+  "version": 1,
+  "theme": "content",
+  "questionnaires": [
+    {
+      "key": "content_learner_onboarding",
+      "type": "registration",
+      "title": "Willkommen in der AA University – lass uns deinen Lernpfad finden",
+      "description": "Kurzes Eingangs-Assessment vor der Inhaltsauswahl. Erfasst Vorwissen, Ziele und Lernpräferenzen für die KI-Empfehlung.",
+      "trigger": "first_enter_university",
+      "sections": [
+        {
+          "key": "context",
+          "title": "Rolle & Kontext",
+          "questions": [
+            {
+              "key": "role",
+              "label": "In welchem Bereich arbeitest du hauptsächlich?",
+              "type": "single_choice",
+              "required": true,
+              "ai_context": true,
+              "options": [
+                { "value": "sales", "label": "Vertrieb" },
+                { "value": "marketing", "label": "Marketing" },
+                { "value": "support", "label": "Support/Service" },
+                { "value": "management", "label": "Management" },
+                { "value": "it_admin", "label": "IT/Admin" },
+                { "value": "other", "label": "Sonstiges" }
+              ]
+            },
+            {
+              "key": "crm_tenure",
+              "label": "Wie lange arbeitest du schon mit dem CRM?",
+              "type": "single_choice",
+              "required": true,
+              "ai_context": true,
+              "options": [
+                { "value": "new", "label": "Neu (< 3 Monate)" },
+                { "value": "lt_year", "label": "3–12 Monate" },
+                { "value": "gt_year", "label": "> 1 Jahr" },
+                { "value": "power", "label": "Power-User" }
+              ]
+            },
+            {
+              "key": "goal_context",
+              "label": "Gibt es einen konkreten Anlass für deine Weiterbildung?",
+              "type": "free_text",
+              "required": false,
+              "ai_context": true
+            }
+          ]
+        },
+        {
+          "key": "self_assessment",
+          "title": "Wie schätzt du dein Wissen ein?",
+          "description": "1 = noch nie gemacht … 5 = kann ich anderen beibringen",
+          "questions": [
+            { "key": "skill_basics", "label": "CRM-Grundlagen / Navigation", "type": "likert_1_5", "required": true, "ai_context": true, "skill_tag": "basics" },
+            { "key": "skill_contacts", "label": "Kontakte & Leads", "type": "likert_1_5", "required": true, "ai_context": true, "skill_tag": "contacts" },
+            { "key": "skill_pipeline", "label": "Pipeline & Deals", "type": "likert_1_5", "required": true, "ai_context": true, "skill_tag": "pipeline" },
+            { "key": "skill_reporting", "label": "Auswertungen & Reporting", "type": "likert_1_5", "required": true, "ai_context": true, "skill_tag": "reporting" },
+            { "key": "skill_automation", "label": "Automationen / Workflows", "type": "likert_1_5", "required": true, "ai_context": true, "skill_tag": "automation" },
+            { "key": "skill_ai", "label": "KI-Funktionen im CRM", "type": "likert_1_5", "required": true, "ai_context": true, "skill_tag": "ai" }
+          ]
+        },
+        {
+          "key": "goals",
+          "title": "Lernziele & Erwartung",
+          "questions": [
+            {
+              "key": "learning_goals",
+              "label": "Was möchtest du erreichen?",
+              "type": "multiple_choice",
+              "required": true,
+              "ai_context": true,
+              "options": [
+                { "value": "master_basics", "label": "Grundlagen sicher beherrschen" },
+                { "value": "efficiency", "label": "Effizienter arbeiten" },
+                { "value": "new_features", "label": "Neue Funktionen kennenlernen" },
+                { "value": "certification", "label": "Auf Zertifizierung vorbereiten" },
+                { "value": "train_team", "label": "Team schulen" },
+                { "value": "other", "label": "Sonstiges" }
+              ]
+            },
+            {
+              "key": "expectation",
+              "label": "Was erwartest du dir konkret von der University?",
+              "type": "free_text",
+              "required": false,
+              "ai_context": true
+            }
+          ]
+        },
+        {
+          "key": "preferences",
+          "title": "Lernpräferenzen",
+          "questions": [
+            {
+              "key": "time_budget",
+              "label": "Wie viel Zeit pro Woche möchtest du investieren?",
+              "type": "single_choice",
+              "required": true,
+              "ai_context": true,
+              "options": [
+                { "value": "lt_30", "label": "< 30 Min" },
+                { "value": "30_60", "label": "30–60 Min" },
+                { "value": "1_2h", "label": "1–2 Std" },
+                { "value": "gt_2h", "label": "> 2 Std" }
+              ]
+            },
+            {
+              "key": "format_pref",
+              "label": "Bevorzugtes Lernformat",
+              "type": "single_choice",
+              "required": false,
+              "ai_context": true,
+              "options": [
+                { "value": "micro", "label": "Kurze Häppchen" },
+                { "value": "long", "label": "Längere zusammenhängende Einheiten" },
+                { "value": "any", "label": "Egal" }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "knowledge_check",
+          "title": "Kurzer Wissens-Check (optional)",
+          "description": "Hilft uns, dich objektiv einzustufen. Du kannst diesen Teil überspringen.",
+          "optional": true,
+          "questions": [
+            {
+              "key": "check_basics_1",
+              "label": "[PLATZHALTER – fachlich abnehmen] Wo legst du im CRM einen neuen Kontakt an?",
+              "type": "single_choice",
+              "required": false,
+              "skill_tag": "basics",
+              "scoring": { "correct": "a", "points": 1 },
+              "options": [
+                { "value": "a", "label": "Über das Modul 'Kontakte' → Neu" },
+                { "value": "b", "label": "In den Systemeinstellungen" },
+                { "value": "c", "label": "Im Reporting-Bereich" }
+              ]
+            },
+            {
+              "key": "check_pipeline_1",
+              "label": "[PLATZHALTER – fachlich abnehmen] Was beschreibt eine 'Stage' in der Pipeline?",
+              "type": "single_choice",
+              "required": false,
+              "skill_tag": "pipeline",
+              "scoring": { "correct": "b", "points": 1 },
+              "options": [
+                { "value": "a", "label": "Ein Benutzerkonto" },
+                { "value": "b", "label": "Eine Phase im Verkaufsprozess" },
+                { "value": "c", "label": "Ein E-Mail-Template" }
+              ]
+            },
+            {
+              "key": "check_reporting_1",
+              "label": "[PLATZHALTER – fachlich abnehmen] Womit erstellst du eine Auswertung über offene Deals?",
+              "type": "single_choice",
+              "required": false,
+              "skill_tag": "reporting",
+              "scoring": { "correct": "c", "points": 1 },
+              "options": [
+                { "value": "a", "label": "Über das Kontaktformular" },
+                { "value": "b", "label": "Über die Benutzerverwaltung" },
+                { "value": "c", "label": "Über ein Report/Dashboard" }
+              ]
+            }
+          ]
+        }
+      ],
+      "evaluation": {
+        "produces": "learner_profile",
+        "ai_recommendation": true,
+        "rule_hint": "Pro skill_tag: min(Selbsteinschätzung normalisiert, Check-Score) < Schwelle → Grundlagen-Sequenzen dieses Tags zuerst einplanen."
+      }
+    },
+    {
+      "key": "content_creator_registration",
+      "type": "registration",
+      "title": "Werde Content-Ersteller in der AA University",
+      "description": "Registrierung für Nutzer, die Lerninhalte erstellen und ggf. im Marketplace anbieten möchten.",
+      "trigger": "request_creator_role",
+      "sections": [
+        {
+          "key": "profile",
+          "title": "Dein Creator-Profil",
+          "questions": [
+            {
+              "key": "expertise_areas",
+              "label": "In welchen Themen möchtest du Inhalte erstellen?",
+              "type": "multiple_choice",
+              "required": true,
+              "ai_context": true,
+              "options": [
+                { "value": "basics", "label": "CRM-Grundlagen" },
+                { "value": "sales", "label": "Vertrieb" },
+                { "value": "marketing", "label": "Marketing" },
+                { "value": "support", "label": "Support" },
+                { "value": "reporting", "label": "Reporting" },
+                { "value": "automation", "label": "Automation" },
+                { "value": "ai", "label": "KI" },
+                { "value": "other", "label": "Sonstiges" }
+              ]
+            },
+            {
+              "key": "content_types",
+              "label": "Welche Inhaltsformate planst du?",
+              "type": "multiple_choice",
+              "required": true,
+              "options": [
+                { "value": "video", "label": "Video-Sequenzen" },
+                { "value": "article", "label": "Wissensartikel" },
+                { "value": "quiz", "label": "Quiz/Fragen" },
+                { "value": "template", "label": "Templates" },
+                { "value": "other", "label": "Sonstiges" }
+              ]
+            },
+            {
+              "key": "target_audience",
+              "label": "Für welche Zielgruppe?",
+              "type": "multiple_choice",
+              "required": true,
+              "options": [
+                { "value": "beginner", "label": "Einsteiger" },
+                { "value": "advanced", "label": "Fortgeschrittene" },
+                { "value": "power", "label": "Power-User" },
+                { "value": "admin", "label": "Admins" },
+                { "value": "manager", "label": "Manager" }
+              ]
+            },
+            {
+              "key": "experience",
+              "label": "Hast du schon Schulungs-/Trainingserfahrung?",
+              "type": "single_choice",
+              "required": false,
+              "options": [
+                { "value": "extensive", "label": "Ja, umfangreich" },
+                { "value": "some", "label": "Etwas" },
+                { "value": "none", "label": "Nein" }
+              ]
+            },
+            {
+              "key": "marketplace_intent",
+              "label": "Möchtest du Inhalte im Marketplace anbieten?",
+              "type": "single_choice",
+              "required": true,
+              "options": [
+                { "value": "internal", "label": "Nur intern" },
+                { "value": "internal_external", "label": "Intern + extern" },
+                { "value": "unsure", "label": "Noch unklar" }
+              ]
+            },
+            {
+              "key": "motivation",
+              "label": "Kurz: Was möchtest du vermitteln?",
+              "type": "free_text",
+              "required": false
+            }
+          ]
+        }
+      ],
+      "evaluation": {
+        "produces": "creator_profile",
+        "ai_recommendation": false
+      }
+    }
+  ]
+}
